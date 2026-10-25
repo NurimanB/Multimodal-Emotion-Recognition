@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+*.egg-info/
+
+# data and training outputs are never committed
+/data/
+/outputs/
+/checkpoints/
+wandb/
+*.pt
+*.bin
+*.safetensors
