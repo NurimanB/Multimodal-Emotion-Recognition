@@ -20,3 +20,11 @@ tests/         unit tests
 pip install -r requirements.txt
 pip install -e .
 ```
+
+## Data: MELD
+
+```bash
+python scripts/download_meld.py --data_dir data/meld
+```
+
+Downloads the MELD text CSVs (train 9,989 / dev 1,109 / test 2,610 utterances) and prints the class balance. Seven emotions: neutral, joy, surprise, anger, sadness, disgust, fear. Neutral is 47% of the training set.
