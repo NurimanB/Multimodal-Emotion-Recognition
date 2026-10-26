@@ -75,5 +75,29 @@ def load_split(data_dir: str | Path, split: str) -> pd.DataFrame:
     return df[["dialogue_id", "utterance_id", "speaker", "utterance", "emotion", "sentiment", "label"]]
 
 
+def add_context(
+    df: pd.DataFrame, n_context: int, with_speaker: bool = True, sep: str = " </s> "
+) -> pd.DataFrame:
+    """Add a 'context' column with the previous n_context turns of the same dialogue.
+
+    The target utterance itself is kept in 'target'. With n_context=0 the
+    context is empty and the model sees only the utterance.
+    """
+    df = df.copy()
+
+    def fmt(row) -> str:
+        return f"{row.speaker}: {row.utterance}" if with_speaker else row.utterance
+
+    df["target"] = [fmt(r) for r in df.itertuples()]
+    contexts = []
+    for _, group in df.groupby("dialogue_id", sort=False):
+        turns = group["target"].tolist()
+        for i in range(len(turns)):
+            start = max(0, i - n_context)
+            contexts.append(sep.join(turns[start:i]) if n_context > 0 else "")
+    df["context"] = contexts
+    return df
+
+
 def class_counts(df: pd.DataFrame) -> pd.Series:
     return df["emotion"].value_counts().reindex(EMOTIONS, fill_value=0)
