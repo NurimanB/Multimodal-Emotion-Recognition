@@ -1,0 +1,14 @@
+# Quick check that the whole pipeline runs (about 2-3 minutes on a Colab T4).
+# Scores are meaningless; use it after changing code or the environment.
+model_name: FacebookAI/xlm-roberta-base
+output_dir: outputs/smoke
+checkpoint_dir: checkpoints/smoke
+n_context: 2
+max_length: 128
+epochs: 1
+lr: 3.0e-5
+batch_size: 16
+grad_accum: 1
+limit_train: 1000
+limit_eval: 300
+early_stopping_patience: 1

@@ -34,3 +34,11 @@ Each utterance can be given the previous N turns of its dialogue (with speaker n
 ```bash
 pytest
 ```
+
+## Training (text)
+
+```bash
+python -m mer.text.train --config configs/smoke.yaml
+```
+
+Any `key=value` after the config overrides that setting, e.g. `n_context=5 lr=2e-5`. Metric: weighted F1 (also macro F1 and accuracy).
