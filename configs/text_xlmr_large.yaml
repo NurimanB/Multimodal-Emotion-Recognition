@@ -1,0 +1,11 @@
+# Main text model: XLM-RoBERTa-large with dialogue context (multilingual, so the
+# same encoder can later be used for Kazakh and Russian data).
+model_name: FacebookAI/xlm-roberta-large
+output_dir: outputs/text_xlmr_large_ctx3
+checkpoint_dir: checkpoints/text_xlmr_large_ctx3
+n_context: 3
+max_length: 256
+epochs: 6
+lr: 1.0e-5
+batch_size: 8
+grad_accum: 2

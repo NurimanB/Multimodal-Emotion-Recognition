@@ -18,7 +18,7 @@ from pathlib import Path
 import numpy as np
 import torch
 import yaml
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score
 from torch.utils.data import Dataset
 from transformers import (
     AutoModelForSequenceClassification,
@@ -45,6 +45,7 @@ DEFAULTS = {
     "grad_accum": 2,
     "weight_decay": 0.01,
     "warmup_ratio": 0.1,
+    "class_weights": True,  # inverse-frequency weights in the loss (MELD is very imbalanced)
     "early_stopping_patience": 2,
     "gradient_checkpointing": False,
     "seed": 42,
@@ -74,6 +75,19 @@ class MeldTextDataset(Dataset):
 
     def __getitem__(self, idx):
         return self.features[idx]
+
+
+class WeightedTrainer(Trainer):
+    def __init__(self, *args, class_weights=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.class_weights = class_weights
+
+    def compute_loss(self, model, inputs, return_outputs=False, **kwargs):
+        labels = inputs.pop("labels")
+        outputs = model(**inputs)
+        weight = self.class_weights.to(outputs.logits.device) if self.class_weights is not None else None
+        loss = torch.nn.functional.cross_entropy(outputs.logits.float(), labels, weight=weight)
+        return (loss, outputs) if return_outputs else loss
 
 
 def compute_metrics(eval_pred):
@@ -120,11 +134,18 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(cfg["model_name"])
     tokenizer.truncation_side = "left"
 
-    _, train_ds = prepare(load_split(cfg["data_dir"], "train"), cfg, tokenizer, cfg["limit_train"])
+    train_df, train_ds = prepare(load_split(cfg["data_dir"], "train"), cfg, tokenizer, cfg["limit_train"])
     dev_df, dev_ds = prepare(load_split(cfg["data_dir"], "dev"), cfg, tokenizer, cfg["limit_eval"])
     test_df, test_ds = prepare(load_split(cfg["data_dir"], "test"), cfg, tokenizer, cfg["limit_eval"])
     print(f"train={len(train_ds)} dev={len(dev_ds)} test={len(test_ds)}")
     print("Example input:", tokenizer.decode(train_ds[0]["input_ids"]))
+
+    class_weights = None
+    if cfg["class_weights"]:
+        counts = np.bincount(train_df["label"], minlength=len(EMOTIONS)).astype(float)
+        w = counts.sum() / (len(EMOTIONS) * np.maximum(counts, 1))
+        class_weights = torch.tensor(w, dtype=torch.float)
+        print("Class weights:", dict(zip(EMOTIONS, np.round(w, 2))))
 
     model = AutoModelForSequenceClassification.from_pretrained(
         cfg["model_name"], num_labels=len(EMOTIONS), id2label=ID2LABEL, label2id=LABEL2ID
@@ -160,7 +181,7 @@ def main():
         report_to="none",
         seed=cfg["seed"],
     )
-    trainer = Trainer(
+    trainer = WeightedTrainer(
         model=model,
         args=args,
         train_dataset=train_ds,
@@ -168,6 +189,7 @@ def main():
         processing_class=tokenizer,
         compute_metrics=compute_metrics,
         callbacks=[EarlyStoppingCallback(early_stopping_patience=cfg["early_stopping_patience"])],
+        class_weights=class_weights,
     )
 
     start = time.time()
@@ -180,7 +202,18 @@ def main():
         y_pred = pred.predictions.argmax(-1)
         y_true = pred.label_ids
         results[split] = {k.replace("test_", ""): v for k, v in pred.metrics.items()}
-        print(f"{split}: " + ", ".join(f"{k}={v:.4f}" for k, v in results[split].items() if k in ("weighted_f1", "macro_f1", "accuracy")))
+        results[split]["per_class"] = classification_report(
+            y_true, y_pred, labels=list(range(len(EMOTIONS))), target_names=EMOTIONS,
+            output_dict=True, zero_division=0,
+        )
+        results[split]["confusion_matrix"] = confusion_matrix(
+            y_true, y_pred, labels=list(range(len(EMOTIONS)))
+        ).tolist()
+        print(f"\n== {split} ==")
+        print(classification_report(
+            y_true, y_pred, labels=list(range(len(EMOTIONS))), target_names=EMOTIONS,
+            digits=4, zero_division=0,
+        ))
 
     (out / "results.json").write_text(json.dumps(results, indent=2, default=float))
     if cfg["save_model"]:

@@ -1,0 +1,10 @@
+# English reference baseline: RoBERTa-large, same setup as the main model.
+model_name: FacebookAI/roberta-large
+output_dir: outputs/text_roberta_large_ctx3
+checkpoint_dir: checkpoints/text_roberta_large_ctx3
+n_context: 3
+max_length: 256
+epochs: 6
+lr: 1.0e-5
+batch_size: 8
+grad_accum: 2
