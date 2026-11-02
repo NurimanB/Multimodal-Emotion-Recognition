@@ -1,0 +1,4 @@
+run,dev_wF1,test_wF1,test_macroF1,test_acc,minutes
+smoke,0.0244,0.0138,0.0228,0.0867,0.5
+text_roberta_large_ctx3,0.6374,0.6108,0.4727,0.5996,79.2
+text_xlmr_large_ctx3,0.6126,0.6355,0.4806,0.6215,90.4
