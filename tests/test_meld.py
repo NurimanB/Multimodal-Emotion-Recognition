@@ -35,3 +35,11 @@ def test_no_context():
     df = add_context(make_df(), n_context=0, with_speaker=False)
     assert (df["context"] == "").all()
     assert df.loc[1, "target"] == "Hey!"
+
+
+def test_future_context():
+    df = add_context(make_df(), n_context=1, sep=" | ", n_future=1)
+    assert df.loc[0, "context"] == "## Rachel: Hey!"
+    assert df.loc[1, "context"] == "Ross: Hi. ## Ross: How are you?"
+    # last turn has no future; the next dialogue must not leak in
+    assert df.loc[2, "context"] == "Rachel: Hey!"

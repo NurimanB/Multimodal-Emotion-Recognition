@@ -76,12 +76,14 @@ def load_split(data_dir: str | Path, split: str) -> pd.DataFrame:
 
 
 def add_context(
-    df: pd.DataFrame, n_context: int, with_speaker: bool = True, sep: str = " </s> "
+    df: pd.DataFrame, n_context: int, with_speaker: bool = True, sep: str = " </s> ", n_future: int = 0
 ) -> pd.DataFrame:
     """Add a 'context' column with the previous n_context turns of the same dialogue.
 
     The target utterance itself is kept in 'target'. With n_context=0 the
-    context is empty and the model sees only the utterance.
+    context is empty and the model sees only the utterance. With n_future > 0
+    the next n_future turns follow the previous ones after a " ## " marker
+    (offline setting: the whole dialogue is known).
     """
     df = df.copy()
 
@@ -93,8 +95,9 @@ def add_context(
     for _, group in df.groupby("dialogue_id", sort=False):
         turns = group["target"].tolist()
         for i in range(len(turns)):
-            start = max(0, i - n_context)
-            contexts.append(sep.join(turns[start:i]) if n_context > 0 else "")
+            past = sep.join(turns[max(0, i - n_context):i]) if n_context > 0 else ""
+            future = sep.join(turns[i + 1:i + 1 + n_future]) if n_future > 0 else ""
+            contexts.append(f"{past} ## {future}".strip() if future else past)
     df["context"] = contexts
     return df
 

@@ -37,6 +37,7 @@ DEFAULTS = {
     "output_dir": "outputs/run",  # results.json + config (small; can live on Drive)
     "checkpoint_dir": "checkpoints/run",  # large; keep on local Colab disk, not Drive
     "n_context": 3,  # previous turns given to the model
+    "n_future": 0,  # next turns given to the model (offline setting)
     "with_speaker": True,
     "max_length": 256,
     "epochs": 6,
@@ -46,12 +47,15 @@ DEFAULTS = {
     "weight_decay": 0.01,
     "warmup_ratio": 0.1,
     "class_weights": True,  # inverse-frequency weights in the loss (MELD is very imbalanced)
+    "class_weight_power": 1.0,  # 1.0 = inverse frequency, 0.5 = its square root (milder)
+    "focal_gamma": 0.0,  # > 0 switches cross-entropy to focal loss
     "early_stopping_patience": 2,
     "gradient_checkpointing": False,
     "seed": 42,
     "limit_train": None,  # use only N train examples (for smoke tests)
     "limit_eval": None,
     "save_model": False,  # keep the best checkpoint at the end (large: ~2 GB for xlm-r-large)
+    "save_probs": True,  # dev/test probabilities of the best model, for ensembles (small .npy files)
 }
 
 
@@ -78,15 +82,25 @@ class MeldTextDataset(Dataset):
 
 
 class WeightedTrainer(Trainer):
-    def __init__(self, *args, class_weights=None, **kwargs):
+    def __init__(self, *args, class_weights=None, focal_gamma=0.0, **kwargs):
         super().__init__(*args, **kwargs)
         self.class_weights = class_weights
+        self.focal_gamma = focal_gamma
 
     def compute_loss(self, model, inputs, return_outputs=False, **kwargs):
         labels = inputs.pop("labels")
         outputs = model(**inputs)
-        weight = self.class_weights.to(outputs.logits.device) if self.class_weights is not None else None
-        loss = torch.nn.functional.cross_entropy(outputs.logits.float(), labels, weight=weight)
+        logits = outputs.logits.float()
+        weight = self.class_weights.to(logits.device) if self.class_weights is not None else None
+        if self.focal_gamma > 0:
+            # focal loss: down-weights utterances the model already gets right
+            logp = torch.nn.functional.log_softmax(logits, dim=-1).gather(1, labels[:, None]).squeeze(1)
+            loss = -((1 - logp.exp()) ** self.focal_gamma) * logp
+            if weight is not None:
+                loss = loss * weight[labels]
+            loss = loss.mean()
+        else:
+            loss = torch.nn.functional.cross_entropy(logits, labels, weight=weight)
         return (loss, outputs) if return_outputs else loss
 
 
@@ -116,7 +130,8 @@ def parse_config():
 
 
 def prepare(df, cfg, tokenizer, limit):
-    df = add_context(df, cfg["n_context"], cfg["with_speaker"], sep=f" {tokenizer.sep_token} ")
+    df = add_context(df, cfg["n_context"], cfg["with_speaker"], sep=f" {tokenizer.sep_token} ",
+                     n_future=cfg["n_future"])
     if limit:
         df = df.sample(n=min(limit, len(df)), random_state=cfg["seed"])
     return df, MeldTextDataset(df, tokenizer, cfg["max_length"])
@@ -143,7 +158,7 @@ def main():
     class_weights = None
     if cfg["class_weights"]:
         counts = np.bincount(train_df["label"], minlength=len(EMOTIONS)).astype(float)
-        w = counts.sum() / (len(EMOTIONS) * np.maximum(counts, 1))
+        w = (counts.sum() / (len(EMOTIONS) * np.maximum(counts, 1))) ** cfg["class_weight_power"]
         class_weights = torch.tensor(w, dtype=torch.float)
         print("Class weights:", dict(zip(EMOTIONS, np.round(w, 2))))
 
@@ -190,6 +205,7 @@ def main():
         compute_metrics=compute_metrics,
         callbacks=[EarlyStoppingCallback(early_stopping_patience=cfg["early_stopping_patience"])],
         class_weights=class_weights,
+        focal_gamma=cfg["focal_gamma"],
     )
 
     start = time.time()
@@ -201,6 +217,9 @@ def main():
         pred = trainer.predict(ds)
         y_pred = pred.predictions.argmax(-1)
         y_true = pred.label_ids
+        if cfg["save_probs"]:
+            np.save(out / f"{split}_probs.npy", torch.softmax(torch.tensor(pred.predictions).float(), -1).numpy())
+            np.save(out / f"{split}_labels.npy", y_true)
         results[split] = {k.replace("test_", ""): v for k, v in pred.metrics.items()}
         results[split]["per_class"] = classification_report(
             y_true, y_pred, labels=list(range(len(EMOTIONS))), target_names=EMOTIONS,
