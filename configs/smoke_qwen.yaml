@@ -1,0 +1,13 @@
+# Quick check of the QLoRA pipeline with a small Qwen (a few minutes on a T4). Scores are meaningless.
+model_name: Qwen/Qwen2.5-0.5B-Instruct
+output_dir: outputs/smoke_qwen
+checkpoint_dir: checkpoints/smoke_qwen
+n_context: 2
+n_future: 1
+max_length: 192
+epochs: 1
+batch_size: 8
+grad_accum: 1
+eval_steps: 50
+limit_train: 400
+limit_eval: 200

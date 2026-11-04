@@ -1,0 +1,12 @@
+# Ceiling model: Qwen2.5-7B-Instruct with QLoRA (4-bit) and a classification head.
+# Run with python -m mer.text.train_llm; needs `pip install -q peft bitsandbytes`.
+# On a free T4 expect several hours; keep checkpoint_dir on Drive so a rerun resumes.
+model_name: Qwen/Qwen2.5-7B-Instruct
+output_dir: outputs/text_qwen7b_qlora
+checkpoint_dir: checkpoints/text_qwen7b_qlora
+n_context: 3
+max_length: 256
+epochs: 2
+lr: 1.0e-4
+batch_size: 4
+grad_accum: 4

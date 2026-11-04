@@ -114,16 +114,16 @@ def compute_metrics(eval_pred):
     }
 
 
-def parse_config():
+def parse_config(defaults=DEFAULTS):
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=True)
     parser.add_argument("overrides", nargs="*", help="key=value pairs")
     args = parser.parse_args()
-    cfg = dict(DEFAULTS)
+    cfg = dict(defaults)
     cfg.update(yaml.safe_load(Path(args.config).read_text()) or {})
     for item in args.overrides:
         key, value = item.split("=", 1)
-        if key not in DEFAULTS:
+        if key not in defaults:
             raise KeyError(f"Unknown config key: {key}")
         cfg[key] = yaml.safe_load(value)
     return cfg
