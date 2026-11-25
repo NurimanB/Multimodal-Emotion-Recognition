@@ -29,19 +29,25 @@ import pandas as pd
 
 from mer.data.build_text import clean_text, norm_key
 
-# Lower-case stems; a text is in a bucket if it contains any of them.
-# Kazakh first, then the Russian words that often appear in mixed reviews.
+# Lower-case word beginnings; a text is in a bucket if a word starts with one
+# of them. Entries ending in "$" must be the whole word ("фу", not "футбол").
+# Kazakh first, then Russian words that often appear in mixed reviews.
 CUES = {
-    "fear": ["қорқ", "үрей", "қауіп", "қауіпт", "алаңда", "уайым", "зәрем", "шошы",
+    "fear": ["қорқ", "үрей", "қауіпт", "алаңда", "уайымда", "зәрем", "шошы",
              "страшно", "боюсь", "опасно"],
-    "disgust": ["жиіркен", "жексұрын", "сасық", "былғаныш", "лас ", "кір-қожалақ", "құсқым",
-                "фу ", "отврат", "мерзк", "противно"],
+    "disgust": ["жиіркен", "жексұрын", "сасық", "былғаныш", "құсқым", "лас$",
+                "фу$", "фууу", "отврат", "мерзк", "противн"],
     "surprise": ["таң қал", "таңқал", "таңғал", "шынымен бе", "күтпеген", "ойпырмай", "мәссаған",
-                 "апырай", "ого", "вау", "неожидан"],
-    "sadness": ["өкініш", "мұң", "қайғы", "жылад", "көңілім түс", "көңіл қалд", "амал жоқ",
-                "жаль", "грустно", "разочар"],
-    "anger": ["ашу", "ашулан", "масқара", "алдамшы", "алдады", "ұят", "жынды", "ақшамды қайтар",
-              "бесит", "ужас", "позор"],
+                 "апырай", "ого$", "вау$", "неожидан"],
+    "sadness": ["өкініш", "мұң", "қайғы", "жылад", "көңілім түс", "көңілім қал", "амал жоқ",
+                "жаль$", "грустн", "разочар"],
+    "anger": ["ашулан", "ашуым", "ызам", "ызалан", "масқара", "алдамшы", "алдады", "ұятсыз",
+              "ақшамды қайтар", "бесит", "позор"],
+}
+CUE_RE = {
+    emo: re.compile("|".join(r"(?<!\w)" + (re.escape(c[:-1]) + r"(?!\w)" if c.endswith("$") else re.escape(c))
+                             for c in cues))
+    for emo, cues in CUES.items()
 }
 KK_LETTERS = re.compile(r"[әғқңөұүһі]", re.IGNORECASE)
 
@@ -68,9 +74,21 @@ def load_kazsandra(path: str | Path) -> pd.DataFrame:
 
 
 def bucket_of(text: str) -> str:
-    low = f" {text.lower()} "
-    hits = [emo for emo, stems in CUES.items() if any(s in low for s in stems)]
+    low = text.lower()
+    hits = [emo for emo, pattern in CUE_RE.items() if pattern.search(low)]
     return hits[0] if len(hits) == 1 else ("mixed" if hits else "none")
+
+
+def _balanced_sample(df: pd.DataFrame, by: list[str], n: int, seed: int) -> pd.DataFrame:
+    """Equal share per group (small groups give all they have), rest filled at random."""
+    groups = df.groupby(by)
+    share = max(1, n // max(1, groups.ngroups))
+    picked = pd.concat([g.sample(n=min(share, len(g)), random_state=seed) for _, g in groups])
+    if len(picked) > n:
+        return picked.sample(n=n, random_state=seed)
+    left = df.drop(index=picked.index)
+    extra = left.sample(n=min(n - len(picked), len(left)), random_state=seed)
+    return pd.concat([picked, extra])
 
 
 def make_pool(df: pd.DataFrame, size: int, cue_share: float, seed: int,
@@ -92,8 +110,7 @@ def make_pool(df: pd.DataFrame, size: int, cue_share: float, seed: int,
     # 2) random part: stratified by score (1, 2, 5) and domain
     rest = df.drop(index=cue.index)
     n_rand = size - len(cue)
-    weights = rest.groupby(["score", "domain"])["text"].transform("size")
-    rand = rest.sample(n=min(n_rand, len(rest)), weights=1 / weights, random_state=seed)
+    rand = _balanced_sample(rest, ["score", "domain"], n_rand, seed)
 
     pool = pd.concat([cue, rand]).sample(frac=1.0, random_state=seed).reset_index(drop=True)
     pool.insert(0, "id", [f"kz{i:05d}" for i in range(len(pool))])
