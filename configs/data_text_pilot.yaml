@@ -1,0 +1,8 @@
+# Small pilot of the pooled text dataset: at most 2,000 train rows per source.
+#   python -m mer.data.build_text --config configs/data_text_pilot.yaml
+sources: [meld, emorynlp, dailydialog, goemotions, brighter_eng, carer, cedr, brighter_rus]
+cache_dir: data/raw
+out_dir: data/text_pilot
+limit_per_source: 2000
+skip_failed: true
+write_csv: true
