@@ -54,6 +54,23 @@ Target size: 2,000-3,000 texts, at least 150 per class in test (disgust and
 fear will need targeted searching, e.g. comments under news about accidents
 or scandals).
 
+## Making the pool
+
+    python -m mer.data.kk_label_pool --kazsandra data/raw/kazsandra/full.csv --out data/own/kk_pool --size 3000
+
+KazSAnDRA is gated on Hugging Face: log in, accept the terms on the dataset
+page once, then download `full/full.csv`. The script keeps 1-2 and 5 star
+reviews, removes duplicates, and takes half of the pool from texts with cue
+words for the rare emotions (fear, disgust, surprise, sadness, anger) so they
+are not missing. The annotators see only `id` and `text`; the star score and
+cue bucket are in a separate file. Cue words only choose what to look at;
+the label is always the annotator's decision.
+
+KazEmoTTS transcripts are **not** used for text: the sentences come from
+Wikipedia, news and books, and each sentence was given an emotion only to
+tell the narrator how to read it (Abilbekov et al., 2024, section 3.2). The
+label describes the voice, not the text. KazEmoTTS is for the audio stage.
+
 ## File format
 
 `kk_annotated.csv`, UTF-8, columns:
