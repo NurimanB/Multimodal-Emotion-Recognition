@@ -7,6 +7,9 @@ def test_bucket_of():
     assert bucket_of("Өте қорқынышты болды") == "fear"
     assert bucket_of("Жиіркенішті, ешкімге ұсынбаймын") == "disgust"
     assert bucket_of("Рахмет, бәрі жақсы") == "none"
+    assert bucket_of("Локация ашу үшін телеграм жазамыз") == "none"  # "ашу" = to open
+    assert bucket_of("Логотип жасап, футбол ойнаймын") == "none"
+    assert bucket_of("Фу, сасық иіс") == "disgust"
 
 
 def test_pool_uses_only_extreme_scores_and_hides_nothing_needed():
