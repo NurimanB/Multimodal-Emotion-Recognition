@@ -1,0 +1,9 @@
+# Pooled text emotion dataset, version 1: real EN + RU corpora mapped to the
+# 7 MELD emotions. Build with:
+#   python -m mer.data.build_text --config configs/data_text_v1.yaml
+# Add our own Kazakh set later with sources=[...,kk_annotated] kk_csv=<path>.
+sources: [meld, emorynlp, dailydialog, goemotions, brighter_eng, carer, cedr, brighter_rus]
+cache_dir: data/raw
+out_dir: data/text_v1
+min_words_dedup: 4
+include_weak: true
