@@ -182,10 +182,11 @@ def load_goemotions(cache: Path) -> pd.DataFrame:
 
 
 def load_dailydialog(cache: Path) -> pd.DataFrame:
-    """DailyDialog from the parquet copy of roskoN/dailydialog (original splits)."""
+    """DailyDialog (CC BY-NC-SA 4.0) from the parquet copy OpenRL/daily_dialog
+    (original 11,118 / 1,000 / 1,000 dialogue splits; columns dialog, act, emotion)."""
     rows = []
     for split, hf_split in [("train", "train"), ("dev", "validation"), ("test", "test")]:
-        df = _hf_parquet(cache, "roskoN/dailydialog", "full", hf_split)
+        df = _hf_parquet(cache, "OpenRL/daily_dialog", "default", hf_split)
         utt_col = next(c for c in ["utterances", "dialog", "dialogue"] if c in df)
         emo_col = next(c for c in ["emotions", "emotion"] if c in df)
         id_col = next((c for c in ["id", "dialog_id"] if c in df), None)
