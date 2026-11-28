@@ -1,0 +1,331 @@
+{
+  "train_minutes": 42.5,
+  "model_name": "microsoft/deberta-v3-base",
+  "best_validation_metric": 0.6324116142539209,
+  "checkpoint_selection": "highest dev weighted F1; early stopping on dev",
+  "dev": {
+    "n_examples": 1109,
+    "accuracy": 0.6357078449053201,
+    "weighted_f1": 0.6324116142539209,
+    "macro_f1": 0.5063426413603583,
+    "weighted_precision": 0.6330353504654797,
+    "weighted_recall": 0.6357078449053201,
+    "cross_entropy": 1.124150055535199,
+    "per_class": {
+      "neutral": {
+        "precision": 0.7405189620758483,
+        "recall": 0.7893617021276595,
+        "f1-score": 0.7641606591143152,
+        "support": 470.0
+      },
+      "joy": {
+        "precision": 0.6181818181818182,
+        "recall": 0.6257668711656442,
+        "f1-score": 0.6219512195121951,
+        "support": 163.0
+      },
+      "surprise": {
+        "precision": 0.6712328767123288,
+        "recall": 0.6533333333333333,
+        "f1-score": 0.6621621621621622,
+        "support": 150.0
+      },
+      "anger": {
+        "precision": 0.5789473684210527,
+        "recall": 0.43137254901960786,
+        "f1-score": 0.4943820224719101,
+        "support": 153.0
+      },
+      "sadness": {
+        "precision": 0.4098360655737705,
+        "recall": 0.45045045045045046,
+        "f1-score": 0.4291845493562232,
+        "support": 111.0
+      },
+      "disgust": {
+        "precision": 0.25,
+        "recall": 0.2727272727272727,
+        "f1-score": 0.2608695652173913,
+        "support": 22.0
+      },
+      "fear": {
+        "precision": 0.32432432432432434,
+        "recall": 0.3,
+        "f1-score": 0.3116883116883117,
+        "support": 40.0
+      },
+      "accuracy": 0.6357078449053201,
+      "macro avg": {
+        "precision": 0.5132916307555918,
+        "recall": 0.5032874541177097,
+        "f1-score": 0.5063426413603583,
+        "support": 1109.0
+      },
+      "weighted avg": {
+        "precision": 0.6330353504654797,
+        "recall": 0.6357078449053201,
+        "f1-score": 0.6324116142539209,
+        "support": 1109.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        371,
+        25,
+        20,
+        11,
+        34,
+        4,
+        5
+      ],
+      [
+        39,
+        102,
+        7,
+        6,
+        4,
+        2,
+        3
+      ],
+      [
+        15,
+        15,
+        98,
+        11,
+        5,
+        2,
+        4
+      ],
+      [
+        34,
+        12,
+        10,
+        66,
+        19,
+        7,
+        5
+      ],
+      [
+        34,
+        6,
+        4,
+        10,
+        50,
+        2,
+        5
+      ],
+      [
+        5,
+        0,
+        2,
+        2,
+        4,
+        6,
+        3
+      ],
+      [
+        3,
+        5,
+        5,
+        8,
+        6,
+        1,
+        12
+      ]
+    ],
+    "loss": 1.2705520391464233,
+    "runtime": 9.5492,
+    "samples_per_second": 116.136,
+    "steps_per_second": 14.556
+  },
+  "hardware": {
+    "python": "3.13.16",
+    "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "versions": {
+      "numpy": "2.2.6",
+      "pandas": "2.2.3",
+      "scikit-learn": "1.6.1",
+      "torch": "2.14.1+cu130",
+      "transformers": "4.57.6",
+      "accelerate": "1.12.0"
+    },
+    "device": "cuda:0",
+    "source_commit": null,
+    "source_has_uncommitted_changes": null,
+    "parameters": 184427527,
+    "trainable_parameters": 184427527,
+    "gpu": "Tesla T4",
+    "gpu_total_gib": 14.56317138671875,
+    "peak_cuda_allocated_gib": 0.7759480476379395,
+    "latency": {
+      "batch_size": 1,
+      "warmup": 3,
+      "repeats": 30,
+      "scope": "end-to-end preprocessing + forward + postprocessing; excludes loading",
+      "mean_ms": 29.458304666665452,
+      "p50_ms": 27.41412500017759,
+      "p95_ms": 41.971101900526236,
+      "throughput_examples_per_second": 33.946284802043756
+    },
+    "evaluation_batch_size": 8,
+    "max_length": 256
+  },
+  "training_hardware": {
+    "python": "3.13.16",
+    "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "versions": {
+      "numpy": "2.2.6",
+      "pandas": "2.2.3",
+      "scikit-learn": "1.6.1",
+      "torch": "2.14.1+cu130",
+      "transformers": "4.57.6",
+      "accelerate": "1.12.0"
+    },
+    "device": "cuda:0",
+    "source_commit": null,
+    "source_has_uncommitted_changes": null,
+    "parameters": 184427527,
+    "trainable_parameters": 184427527,
+    "gpu": "Tesla T4",
+    "gpu_total_gib": 14.56317138671875,
+    "peak_cuda_allocated_gib": 3.1479573249816895,
+    "training_batch_size": 4,
+    "gradient_accumulation_steps": 4,
+    "max_length": 256
+  },
+  "evaluation_protocol": "Checkpoint/config fixed before this held-out evaluation",
+  "test": {
+    "n_examples": 2610,
+    "accuracy": 0.6406130268199234,
+    "weighted_f1": 0.6406311546273759,
+    "macro_f1": 0.4696796117294168,
+    "weighted_precision": 0.6447944513222629,
+    "weighted_recall": 0.6406130268199234,
+    "cross_entropy": 1.0891504934826142,
+    "per_class": {
+      "neutral": {
+        "precision": 0.7788309636650869,
+        "recall": 0.785031847133758,
+        "f1-score": 0.781919111816019,
+        "support": 1256.0
+      },
+      "joy": {
+        "precision": 0.5958904109589042,
+        "recall": 0.6492537313432836,
+        "f1-score": 0.6214285714285714,
+        "support": 402.0
+      },
+      "surprise": {
+        "precision": 0.5869565217391305,
+        "recall": 0.5765124555160143,
+        "f1-score": 0.5816876122082585,
+        "support": 281.0
+      },
+      "anger": {
+        "precision": 0.58203125,
+        "recall": 0.4318840579710145,
+        "f1-score": 0.49584026622296173,
+        "support": 345.0
+      },
+      "sadness": {
+        "precision": 0.36363636363636365,
+        "recall": 0.4230769230769231,
+        "f1-score": 0.39111111111111113,
+        "support": 208.0
+      },
+      "disgust": {
+        "precision": 0.21428571428571427,
+        "recall": 0.17647058823529413,
+        "f1-score": 0.1935483870967742,
+        "support": 68.0
+      },
+      "fear": {
+        "precision": 0.18421052631578946,
+        "recall": 0.28,
+        "f1-score": 0.2222222222222222,
+        "support": 50.0
+      },
+      "accuracy": 0.6406130268199234,
+      "macro avg": {
+        "precision": 0.47226310722871273,
+        "recall": 0.4746042290394695,
+        "f1-score": 0.4696796117294168,
+        "support": 2610.0
+      },
+      "weighted avg": {
+        "precision": 0.6447944513222629,
+        "recall": 0.6406130268199234,
+        "f1-score": 0.6406311546273759,
+        "support": 2610.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        986,
+        91,
+        35,
+        21,
+        87,
+        14,
+        22
+      ],
+      [
+        73,
+        261,
+        19,
+        26,
+        13,
+        6,
+        4
+      ],
+      [
+        43,
+        31,
+        162,
+        29,
+        5,
+        3,
+        8
+      ],
+      [
+        67,
+        35,
+        38,
+        149,
+        29,
+        13,
+        14
+      ],
+      [
+        63,
+        14,
+        10,
+        14,
+        88,
+        7,
+        12
+      ],
+      [
+        22,
+        4,
+        9,
+        13,
+        6,
+        12,
+        2
+      ],
+      [
+        12,
+        2,
+        3,
+        4,
+        14,
+        1,
+        14
+      ]
+    ]
+  },
+  "seed": 42
+}

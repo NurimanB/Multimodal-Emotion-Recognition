@@ -1,2 +1,0 @@
-# Preserve exact bytes of experiment artifacts and frozen SHA-256 records.
-results/experiments/** -text whitespace=cr-at-eol

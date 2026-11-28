@@ -166,7 +166,7 @@ def test_notebook_freeze_cell_is_repeatable_and_detects_changed_selection(monkey
         score = save_split(run, "dev", df, probs())
         write_json(run / "config.json", {"model_name": "fixture", "seed": 42})
         write_json(run / "results.json", {"dev": score})
-    notebook = json.loads((Path(__file__).parents[1] / "notebooks/colab_experiments.ipynb").read_text(encoding="utf-8"))
+    notebook = json.loads((Path(__file__).parents[1] / "notebooks/colab_deberta_meld.ipynb").read_text(encoding="utf-8"))
     source = next("".join(cell["source"]) for cell in notebook["cells"]
                   if cell["cell_type"] == "code" and "".join(cell["source"]).startswith("BEST_NEW = max("))
     def run_module(module, *args):

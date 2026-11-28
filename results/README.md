@@ -1,10 +1,10 @@
 # Emotion recognition — experimental results
 
-Completed text-only English MELD experiments. The official test split contains
-2,610 utterances with the fixed label order: neutral, joy, surprise, anger,
-sadness, disgust, fear.
+Text-only English MELD classification. Train: 9,989; dev: 1,109; test: 2,610.
+All new within-run checkpoint and blend choices use dev. The benchmark had
+already been inspected in prior experiments.
 
-## Latest completed runs
+## Current results
 
 | Run | Dev weighted F1 | Test weighted F1 | Test macro F1 |
 |---|---:|---:|---:|
@@ -13,31 +13,29 @@ sadness, disgust, fear.
 | DeBERTa seed 42 | 0.632412 | 0.640631 | 0.469680 |
 | DeBERTa seed 123 | 0.631273 | 0.642999 | 0.493418 |
 | DeBERTa seed 2025 | 0.620923 | 0.646693 | 0.492233 |
-| Equal three-seed probability mean | 0.639328 | 0.658646 | 0.506526 |
-| Final frozen ensemble | 0.668962 | 0.668079 | 0.511280 |
+| Equal DeBERTa seed mean | 0.639328 | 0.658646 | 0.506526 |
+| RoBERTa + DeBERTa seed mean | 0.668962 | 0.668079 | 0.511280 |
 
-The final ensemble uses 0.35 RoBERTa + 0.65 DeBERTa mean, then adds 0.85 to
-the neutral log-score and renormalizes. All within-v3 choices used dev; earlier
-test results had already been inspected. No external-domain validation is claimed.
-
-Individual DeBERTa test F1 mean ± sample SD is 0.643441 ± 0.003055.
-This differs from F1 of the probability-averaged predictor (0.658646).
+The final ensemble uses 0.35 RoBERTa + 0.65 equal DeBERTa probability mean,
+with neutral log-score offset +0.85, selected on dev.
+Its test accuracy is 0.677395. Individual DeBERTa test F1 mean ± sample SD
+is 0.643441 ± 0.003055; this differs from the probability-mean predictor.
 
 ## Files
 
-- [Full comparison](experiments/multiseed_v3/comparison.csv)
-- [Class-wise results](experiments/multiseed_v3/test_per_class.csv)
-- [Ten reviewed examples and context](experiments/multiseed_v3/review_examples.csv)
-- [Figures](experiments/multiseed_v3/figures)
-- [Recorded ensemble inference and latency](experiments/inference_demo/evidence.json)
-- [Final experiment analysis](../docs/final_results.md)
-- [Two-model refinement](experiments/ensemble_refinement_v2/README.md)
-- [Raw v1 run archive](experiments/evidence/run_v1_evidence.zip)
-- [Raw multiseed v3 archive](experiments/evidence/multiseed_v3_evidence.zip)
+- One *_result.json per model, seed or ensemble, including per-class metrics
+  and confusion matrices, matching the existing encoder result layout.
+- [model_comparison.csv](model_comparison.csv): all historical and current runs.
+- [error_examples.csv](error_examples.csv): five correct / five incorrect
+  ensemble predictions, context and human error hypotheses.
+- figures/: class distribution, learning curves, final confusion matrix and
+  test comparison, saved once as PNG.
+- [legacy_results_provenance.json](legacy_results_provenance.json): attribution
+  correction for the two older JSON files.
 
-Archives preserve the original recorded configurations, paths, predictions,
-trainer logs and freeze records. Their contents have not been rewritten.
-Large model weights are stored separately on Drive.
+Earlier two-model ensemble iterations are retained in separate v1/v2 JSONs.
+Full raw run exports, probabilities, training logs and weights are retained
+outside the repository. The notebook and scripts write full outputs to Drive.
 
 ## Historical encoder runs
 
@@ -47,14 +45,10 @@ Large model weights are stored separately on Drive.
 | Test weighted F1 | 0.6355 | 0.6108 |
 | Test macro F1 | 0.4806 | 0.4727 |
 | Test accuracy | 0.6215 | 0.5996 |
-| Training time, min | 90.4 | 79.2 |
+| Training minutes | 90.4 | 79.2 |
 
-Source: model_comparison.csv and the two legacy result JSONs. Their original
-filenames had been swapped; see legacy_results_provenance.json.
-The current RoBERTa recheck is a separate scoring record. XLM-R weights and
-per-example probabilities were unavailable for the current ensemble.
+The current RoBERTa recheck is a separate scoring record.
+XLM-R weights/probabilities were unavailable for the new ensemble.
 
-Saved RoBERTa checkpoint:
-MyDrive/diploma-mer/outputs/text_roberta_large_ctx3/saved_model.
-The three DeBERTa best_model directories remain with their recorded Drive runs;
-the inference script locates those run folders from metadata.
+Rare emotions remain weak: final ensemble fear F1 0.2881 and disgust F1 0.3115.
+Scores are uncalibrated and external-domain performance has not been evaluated.

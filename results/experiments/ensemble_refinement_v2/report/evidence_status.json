@@ -1,9 +1,0 @@
-{
-  "source": "results/experiments/ensemble_refinement_v2/results.json",
-  "gaps": [
-    "Learning curves: trainer_state.json/log_history unavailable; no curve was invented.",
-    "Hardware, parameter count and latency: not recorded in this result artifact."
-  ],
-  "trainer_state_source": null,
-  "checkpoint": null
-}
