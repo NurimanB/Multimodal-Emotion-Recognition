@@ -1,0 +1,46 @@
+{
+  "train": {
+    "n_examples": 9989,
+    "n_dialogues": 1038,
+    "empty_utterances": 0,
+    "duplicate_sample_keys": 0,
+    "repeated_text_rows": 1077,
+    "dataset_fingerprint": "e59e86c081024370f56764af453c14841d7c7943d9408a6bc1d9833b042a15d8"
+  },
+  "dev": {
+    "n_examples": 1109,
+    "n_dialogues": 114,
+    "empty_utterances": 0,
+    "duplicate_sample_keys": 0,
+    "repeated_text_rows": 66,
+    "dataset_fingerprint": "b416bbc3d18372615e15709061d2f121b2762443cc6716927487ef49a33aca5c"
+  },
+  "test": {
+    "n_examples": 2610,
+    "n_dialogues": 280,
+    "empty_utterances": 0,
+    "duplicate_sample_keys": 0,
+    "repeated_text_rows": 217,
+    "dataset_fingerprint": "89b154c6e24cdd46a6d36bfe6d5c957b998ec66ae697abd32c1586c0dbd162de"
+  },
+  "exact_text_overlap": {
+    "train/dev": {
+      "distinct_shared_texts": 78,
+      "rows_in_right_seen_in_left": 141
+    },
+    "train/test": {
+      "distinct_shared_texts": 135,
+      "rows_in_right_seen_in_left": 334
+    },
+    "dev/test": {
+      "distinct_shared_texts": 44,
+      "rows_in_right_seen_in_left": 216
+    }
+  },
+  "near_duplicate_screen": {
+    "method": "char_wb TF-IDF 3-5 grams; nearest training utterance; cosine >= .95; text >= 20 chars",
+    "candidate_pairs": 3,
+    "interpretation": "manual-review candidates, not a leakage-free guarantee"
+  },
+  "protocol": "Official splits preserved. Vectorizers fit on train; selection on dev; test only after freeze."
+}

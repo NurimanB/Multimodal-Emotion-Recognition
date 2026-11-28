@@ -1,0 +1,11 @@
+{
+  "source": "results\\RoBERTa-large_result.json",
+  "gaps": [
+    "dev: per-example predictions unavailable; evaluate a saved checkpoint for real examples.",
+    "test: per-example predictions unavailable; evaluate a saved checkpoint for real examples.",
+    "Learning curves: trainer_state.json/log_history unavailable; no curve was invented.",
+    "Hardware, parameter count and latency: not measured in this legacy JSON."
+  ],
+  "trainer_state_source": null,
+  "checkpoint": null
+}

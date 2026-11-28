@@ -1,0 +1,12 @@
+{
+  "status": "JSON names corrected using model_comparison.csv and results/README.md; checkpoint attribution requires re-evaluation.",
+  "original_to_corrected": {
+    "RoBERTa-large_result.json": "XLM-RoBERTa-large_result.json",
+    "XLM-RoBERTa-large_result.json": "RoBERTa-large_result.json"
+  },
+  "corrected_test_weighted_f1": {
+    "RoBERTa-large": 0.6107844031356188,
+    "XLM-RoBERTa-large": 0.6355094905333674
+  },
+  "ensemble_0_664": "User-reported; not independently verified in this checkout. Recompute from aligned probabilities."
+}

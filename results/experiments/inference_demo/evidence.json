@@ -1,0 +1,302 @@
+{
+  "purpose": "Typed live-demo prompts, not a held-out evaluation",
+  "examples": [
+    {
+      "input": "I am so happy to see you!",
+      "cleaned": "I am so happy to see you!",
+      "target": "Rachel: I am so happy to see you!",
+      "context": "",
+      "tokens": [
+        "[CLS]",
+        "▁Rachel",
+        ":",
+        "▁I",
+        "▁am",
+        "▁so",
+        "▁happy",
+        "▁to",
+        "▁see",
+        "▁you",
+        "!",
+        "[SEP]"
+      ],
+      "token_ids": [
+        1,
+        7710,
+        294,
+        273,
+        481,
+        324,
+        1005,
+        264,
+        398,
+        274,
+        300,
+        2
+      ],
+      "attention_mask": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "sequence_length": 12,
+      "max_length": 256,
+      "emotion": "joy",
+      "confidence": 0.9377182922371765,
+      "scores": {
+        "neutral": 0.022778919226383126,
+        "joy": 0.9377182922371765,
+        "surprise": 0.015781047956620893,
+        "anger": 0.010348048463061161,
+        "sadness": 0.008296083393995454,
+        "disgust": 0.002017617016324382,
+        "fear": 0.0030599917064384635
+      },
+      "confidence_note": "Uncalibrated blended score after neutral bias; tokens shown for DeBERTa seed 42",
+      "future_context_used_in_demo": false,
+      "model": "Frozen RoBERTa + three-seed DeBERTa ensemble",
+      "weights": [
+        0.35,
+        0.65
+      ],
+      "neutral_bias": 0.85,
+      "token_view": "DeBERTa-v3-base seed 42; RoBERTa uses a different tokenizer"
+    },
+    {
+      "input": "I cannot believe you did that!",
+      "cleaned": "I cannot believe you did that!",
+      "target": "Rachel: I cannot believe you did that!",
+      "context": "",
+      "tokens": [
+        "[CLS]",
+        "▁Rachel",
+        ":",
+        "▁I",
+        "▁cannot",
+        "▁believe",
+        "▁you",
+        "▁did",
+        "▁that",
+        "!",
+        "[SEP]"
+      ],
+      "token_ids": [
+        1,
+        7710,
+        294,
+        273,
+        1037,
+        770,
+        274,
+        464,
+        272,
+        300,
+        2
+      ],
+      "attention_mask": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "sequence_length": 11,
+      "max_length": 256,
+      "emotion": "surprise",
+      "confidence": 0.4683038229362746,
+      "scores": {
+        "neutral": 0.013439521041631671,
+        "joy": 0.02361804457273488,
+        "surprise": 0.4683038229362746,
+        "anger": 0.23452832320928926,
+        "sadness": 0.048030730000375325,
+        "disgust": 0.18607317409955784,
+        "fear": 0.026006384140136292
+      },
+      "confidence_note": "Uncalibrated blended score after neutral bias; tokens shown for DeBERTa seed 42",
+      "future_context_used_in_demo": false,
+      "model": "Frozen RoBERTa + three-seed DeBERTa ensemble",
+      "weights": [
+        0.35,
+        0.65
+      ],
+      "neutral_bias": 0.85,
+      "token_view": "DeBERTa-v3-base seed 42; RoBERTa uses a different tokenizer"
+    },
+    {
+      "input": "The meeting starts at six.",
+      "cleaned": "The meeting starts at six.",
+      "target": "Rachel: The meeting starts at six.",
+      "context": "",
+      "tokens": [
+        "[CLS]",
+        "▁Rachel",
+        ":",
+        "▁The",
+        "▁meeting",
+        "▁starts",
+        "▁at",
+        "▁six",
+        ".",
+        "[SEP]"
+      ],
+      "token_ids": [
+        1,
+        7710,
+        294,
+        279,
+        1122,
+        2351,
+        288,
+        1073,
+        260,
+        2
+      ],
+      "attention_mask": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "sequence_length": 10,
+      "max_length": 256,
+      "emotion": "neutral",
+      "confidence": 0.9902144212846375,
+      "scores": {
+        "neutral": 0.9902144212846375,
+        "joy": 0.00352853159888518,
+        "surprise": 0.0008991037098663965,
+        "anger": 0.0016866199723826606,
+        "sadness": 0.001655253072117135,
+        "disgust": 0.0006773731446691919,
+        "fear": 0.0013386972174417654
+      },
+      "confidence_note": "Uncalibrated blended score after neutral bias; tokens shown for DeBERTa seed 42",
+      "future_context_used_in_demo": false,
+      "model": "Frozen RoBERTa + three-seed DeBERTa ensemble",
+      "weights": [
+        0.35,
+        0.65
+      ],
+      "neutral_bias": 0.85,
+      "token_view": "DeBERTa-v3-base seed 42; RoBERTa uses a different tokenizer"
+    }
+  ],
+  "latency": {
+    "batch_size": 1,
+    "warmup": 3,
+    "repeats": 30,
+    "scope": "end-to-end preprocessing + forward + postprocessing; excludes loading",
+    "mean_ms": 130.1207083999543,
+    "p50_ms": 118.16969649953535,
+    "p95_ms": 169.1965157998311,
+    "throughput_examples_per_second": 7.685171809288668
+  },
+  "hardware": {
+    "gpu": "Tesla T4",
+    "parameters": 908649500,
+    "peak_cuda_allocated_gib": 3.4042015075683594,
+    "load_seconds": 17.814540653000222,
+    "scope": "Four checkpoints simultaneously resident; sequential batch-1 inference; current Colab session"
+  },
+  "selection": {
+    "runs": [
+      "reused_inputs/roberta_recheck",
+      "deberta_seed_mean"
+    ],
+    "weights": [
+      0.35,
+      0.65
+    ],
+    "neutral_bias": 0.85,
+    "dev_weighted_f1": 0.668961761075968,
+    "grid": {
+      "roberta_weights": [
+        0.0,
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.95,
+        1.0
+      ],
+      "neutral_biases": [
+        -0.5,
+        -0.45,
+        -0.4,
+        -0.35,
+        -0.3,
+        -0.25,
+        -0.2,
+        -0.15,
+        -0.1,
+        -0.05,
+        0.0,
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.95,
+        1.0
+      ]
+    },
+    "seeds": [
+      42,
+      123,
+      2025
+    ],
+    "seed_mean_rule": "equal mean of all three predeclared seeds",
+    "selection_split": "dev",
+    "original_test_previously_inspected": true
+  },
+  "confidence_note": "Uncalibrated score; no claim of correctness without ground truth"
+}

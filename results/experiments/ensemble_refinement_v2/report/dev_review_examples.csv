@@ -1,0 +1,11 @@
+sample_id,dialogue_id,utterance_id,speaker,utterance,context,gold,predicted,confidence,correct,human_error_hypothesis,human_notes
+50:3,50,3,Phoebe,"Okay, maybe ask this guy.","Phoebe: Oh! Here it is!  Ooh, Joey! Why did you sign it, ""Son of a bitch?"" </s> Joey: I didn't do that! Who would've done that?! </s> The Dry Cleaner: Son of a bitch!",neutral,neutral,0.9835802803868056,True,,
+65:4,65,4,Rachel,Really?!,"Joanna: That's fine, actually I'm on the hiring committee, so there'll be at least one friendly face. </s> Rachel: Ohh! That's great! </s> Joanna: You know, Junior Miss is where I started. Oh, I had to sleep with the",surprise,surprise,0.9669001312584932,True,,
+65:2,65,2,Rachel,Ohh! That's great!,"Rachel: And that's I'm so glad… there's no problem. </s> Joanna: That's fine, actually I'm on the hiring committee, so there'll be at least one friendly face.",joy,joy,0.9594954966673168,True,,
+17:4,17,4,Rachel,"Well, you ripped the paper out of the court reporter's machine!!",Passerby: Maybe because you've got the keys? </s> Rachel: This is totally your fault! </s> Ross: My fault?! You threatened the judge!,anger,anger,0.9114422730113512,True,,
+55:0,55,0,Kate,I'm sorry.,,sadness,sadness,0.9091750137526294,True,,
+90:0,90,0,Rachel,"Ok, Paulo, why don't you just go get dressed, and then you be on your way, ok, bye-bye.",,joy,neutral,0.9812582503770928,False,,
+69:1,69,1,Tag,I'm okay. I gotta go down to the police station and look at mug shots.,"Rachel: Oh, hi! How are you doing?",sadness,neutral,0.9790747880185128,False,,
+49:7,49,7,Phoebe,Get in here.,"Ross: Look, Carol never threw me out of a room before you came along. </s> Susan: Yeah? Well, there's a lot of things Carol never did before I came along. </s> Phoebe: Hey, hey, ok, all right, that's it!",anger,neutral,0.9635505623715706,False,,
+36:6,36,6,Ross,Of course I am. I just have to make a call.,"Rachel: I really do. </s> Ross: Okay, I'm gonna get your coat and then I'll-I'll put you in a cab. </s> Rachel: Okay. Oh wait, wait-wait, you're not gonna come with me?",surprise,neutral,0.9442278184089662,False,,
+109:2,109,2,Ross,Unbelievable! I mean you really kept Joey's underwear?! Why? Why would you do that?!,Monica: I guess I set up the video camera to try and entice Joey. </s> Joey: But sadly I could not be enticed.,disgust,surprise,0.9419552063135884,False,,

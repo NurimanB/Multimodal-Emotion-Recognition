@@ -1,0 +1,650 @@
+{
+  "model_name": "Dev-refined RoBERTa + DeBERTa (v2)",
+  "dev": {
+    "n_examples": 1109,
+    "accuracy": 0.672678088367899,
+    "weighted_f1": 0.6663284408072734,
+    "macro_f1": 0.5510288189107523,
+    "weighted_precision": 0.6765832555770704,
+    "weighted_recall": 0.672678088367899,
+    "cross_entropy": 0.9986625301494816,
+    "per_class": {
+      "neutral": {
+        "precision": 0.7447619047619047,
+        "recall": 0.8319148936170213,
+        "f1-score": 0.785929648241206,
+        "support": 470.0
+      },
+      "joy": {
+        "precision": 0.6294117647058823,
+        "recall": 0.656441717791411,
+        "f1-score": 0.6426426426426426,
+        "support": 163.0
+      },
+      "surprise": {
+        "precision": 0.6484848484848484,
+        "recall": 0.7133333333333334,
+        "f1-score": 0.6793650793650794,
+        "support": 150.0
+      },
+      "anger": {
+        "precision": 0.7473684210526316,
+        "recall": 0.46405228758169936,
+        "f1-score": 0.5725806451612904,
+        "support": 153.0
+      },
+      "sadness": {
+        "precision": 0.589041095890411,
+        "recall": 0.38738738738738737,
+        "f1-score": 0.4673913043478261,
+        "support": 111.0
+      },
+      "disgust": {
+        "precision": 0.2413793103448276,
+        "recall": 0.3181818181818182,
+        "f1-score": 0.27450980392156865,
+        "support": 22.0
+      },
+      "fear": {
+        "precision": 0.38461538461538464,
+        "recall": 0.5,
+        "f1-score": 0.43478260869565216,
+        "support": 40.0
+      },
+      "accuracy": 0.672678088367899,
+      "macro avg": {
+        "precision": 0.5692946756936986,
+        "recall": 0.5530444911275244,
+        "f1-score": 0.5510288189107523,
+        "support": 1109.0
+      },
+      "weighted avg": {
+        "precision": 0.6765832555770704,
+        "recall": 0.672678088367899,
+        "f1-score": 0.6663284408072734,
+        "support": 1109.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        391,
+        23,
+        22,
+        9,
+        11,
+        4,
+        10
+      ],
+      [
+        37,
+        107,
+        10,
+        3,
+        3,
+        2,
+        1
+      ],
+      [
+        14,
+        15,
+        107,
+        3,
+        5,
+        1,
+        5
+      ],
+      [
+        32,
+        18,
+        12,
+        71,
+        6,
+        11,
+        3
+      ],
+      [
+        41,
+        3,
+        6,
+        5,
+        43,
+        2,
+        11
+      ],
+      [
+        6,
+        0,
+        3,
+        0,
+        4,
+        7,
+        2
+      ],
+      [
+        4,
+        4,
+        5,
+        4,
+        1,
+        2,
+        20
+      ]
+    ]
+  },
+  "selection": {
+    "schema_version": 1,
+    "source_archive_sha256": "12c842c33fa9f9474c513038487b05c01b55dbdd7dfa33d46f0d68e554ddab53",
+    "runs": [
+      "roberta_recheck",
+      "deberta_s42"
+    ],
+    "weights": [
+      0.6,
+      0.4
+    ],
+    "neutral_bias": 0.75,
+    "dev_weighted_f1": 0.6663284408072734,
+    "reference_weights": [
+      0.5,
+      0.5
+    ],
+    "reference_neutral_bias": 0.5,
+    "reference_dev_weighted_f1": 0.6645841187074325,
+    "dev_dataset_fingerprint": "b416bbc3d18372615e15709061d2f121b2762443cc6716927487ef49a33aca5c",
+    "label_order": [
+      "neutral",
+      "joy",
+      "surprise",
+      "anger",
+      "sadness",
+      "disgust",
+      "fear"
+    ],
+    "selection_split": "dev",
+    "test_used_for_selection": false,
+    "original_test_previously_inspected": true,
+    "interpretation": "Exploratory refinement after the v1 test report, not a newly unseen benchmark",
+    "grid": {
+      "first_model_weights": [
+        0.0,
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.95,
+        1.0
+      ],
+      "neutral_biases": [
+        -0.5,
+        -0.45,
+        -0.4,
+        -0.35,
+        -0.3,
+        -0.25,
+        -0.2,
+        -0.15,
+        -0.1,
+        -0.05,
+        0.0,
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.55,
+        0.6,
+        0.65,
+        0.7,
+        0.75,
+        0.8,
+        0.85,
+        0.9,
+        0.95,
+        1.0
+      ],
+      "tie_break": "nearest reference weights/bias; then smaller absolute bias; then smaller first weight"
+    },
+    "candidate_count": 651,
+    "bootstrap_protocol": {
+      "unit": "dialogue",
+      "paired": true,
+      "resamples": 2000,
+      "seed": 2025,
+      "interval": "95% percentile",
+      "metric": "weighted_f1 difference: refined minus reference"
+    },
+    "canonical_csv_checked": true
+  },
+  "test": {
+    "n_examples": 2610,
+    "accuracy": 0.6628352490421456,
+    "weighted_f1": 0.6584726608460996,
+    "macro_f1": 0.511166685087126,
+    "weighted_precision": 0.6646049030169144,
+    "weighted_recall": 0.6628352490421456,
+    "cross_entropy": 0.9882607515181795,
+    "per_class": {
+      "neutral": {
+        "precision": 0.77526395173454,
+        "recall": 0.8184713375796179,
+        "f1-score": 0.796281951975213,
+        "support": 1256.0
+      },
+      "joy": {
+        "precision": 0.6095890410958904,
+        "recall": 0.664179104477612,
+        "f1-score": 0.6357142857142857,
+        "support": 402.0
+      },
+      "surprise": {
+        "precision": 0.5451612903225806,
+        "recall": 0.6014234875444839,
+        "f1-score": 0.571912013536379,
+        "support": 281.0
+      },
+      "anger": {
+        "precision": 0.6506550218340611,
+        "recall": 0.4318840579710145,
+        "f1-score": 0.519163763066202,
+        "support": 345.0
+      },
+      "sadness": {
+        "precision": 0.5,
+        "recall": 0.34134615384615385,
+        "f1-score": 0.4057142857142857,
+        "support": 208.0
+      },
+      "disgust": {
+        "precision": 0.32894736842105265,
+        "recall": 0.36764705882352944,
+        "f1-score": 0.3472222222222222,
+        "support": 68.0
+      },
+      "fear": {
+        "precision": 0.23595505617977527,
+        "recall": 0.42,
+        "f1-score": 0.302158273381295,
+        "support": 50.0
+      },
+      "accuracy": 0.6628352490421456,
+      "macro avg": {
+        "precision": 0.5207959613697,
+        "recall": 0.5207073143203444,
+        "f1-score": 0.511166685087126,
+        "support": 2610.0
+      },
+      "weighted avg": {
+        "precision": 0.6646049030169144,
+        "recall": 0.6628352490421456,
+        "f1-score": 0.6584726608460996,
+        "support": 2610.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        1028,
+        79,
+        45,
+        31,
+        37,
+        10,
+        26
+      ],
+      [
+        79,
+        267,
+        22,
+        14,
+        8,
+        7,
+        5
+      ],
+      [
+        44,
+        34,
+        169,
+        16,
+        6,
+        9,
+        3
+      ],
+      [
+        69,
+        36,
+        48,
+        149,
+        12,
+        17,
+        14
+      ],
+      [
+        69,
+        17,
+        12,
+        12,
+        71,
+        7,
+        20
+      ],
+      [
+        22,
+        3,
+        9,
+        6,
+        3,
+        25,
+        0
+      ],
+      [
+        15,
+        2,
+        5,
+        1,
+        5,
+        1,
+        21
+      ]
+    ]
+  },
+  "evaluation": {
+    "source_archive_sha256": "12c842c33fa9f9474c513038487b05c01b55dbdd7dfa33d46f0d68e554ddab53",
+    "selection_sha256": "57f1e9b3fc009e0ba288d47f7dc5a0117f1648f00fc09db309ddf1aa6ace7643",
+    "reference_test": {
+      "n_examples": 2610,
+      "accuracy": 0.660536398467433,
+      "weighted_f1": 0.6575566645512206,
+      "macro_f1": 0.5093340333581303,
+      "weighted_precision": 0.6634453570242799,
+      "weighted_recall": 0.660536398467433,
+      "cross_entropy": 0.9934847313547265,
+      "per_class": {
+        "neutral": {
+          "precision": 0.7812018489984591,
+          "recall": 0.8073248407643312,
+          "f1-score": 0.7940485512920908,
+          "support": 1256.0
+        },
+        "joy": {
+          "precision": 0.6044444444444445,
+          "recall": 0.6766169154228856,
+          "f1-score": 0.6384976525821596,
+          "support": 402.0
+        },
+        "surprise": {
+          "precision": 0.5434083601286174,
+          "recall": 0.6014234875444839,
+          "f1-score": 0.5709459459459459,
+          "support": 281.0
+        },
+        "anger": {
+          "precision": 0.6359832635983264,
+          "recall": 0.4405797101449275,
+          "f1-score": 0.5205479452054794,
+          "support": 345.0
+        },
+        "sadness": {
+          "precision": 0.4897959183673469,
+          "recall": 0.34615384615384615,
+          "f1-score": 0.4056338028169014,
+          "support": 208.0
+        },
+        "disgust": {
+          "precision": 0.32,
+          "recall": 0.35294117647058826,
+          "f1-score": 0.3356643356643357,
+          "support": 68.0
+        },
+        "fear": {
+          "precision": 0.23333333333333334,
+          "recall": 0.42,
+          "f1-score": 0.3,
+          "support": 50.0
+        },
+        "accuracy": 0.660536398467433,
+        "macro avg": {
+          "precision": 0.5154524526957897,
+          "recall": 0.5207199966430089,
+          "f1-score": 0.5093340333581303,
+          "support": 2610.0
+        },
+        "weighted avg": {
+          "precision": 0.6634453570242799,
+          "recall": 0.660536398467433,
+          "f1-score": 0.6575566645512206,
+          "support": 2610.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          1014,
+          85,
+          45,
+          31,
+          42,
+          12,
+          27
+        ],
+        [
+          72,
+          272,
+          23,
+          13,
+          9,
+          8,
+          5
+        ],
+        [
+          41,
+          35,
+          169,
+          20,
+          6,
+          7,
+          3
+        ],
+        [
+          69,
+          34,
+          49,
+          152,
+          10,
+          17,
+          14
+        ],
+        [
+          66,
+          19,
+          11,
+          14,
+          72,
+          6,
+          20
+        ],
+        [
+          22,
+          3,
+          9,
+          7,
+          3,
+          24,
+          0
+        ],
+        [
+          14,
+          2,
+          5,
+          2,
+          5,
+          1,
+          21
+        ]
+      ]
+    },
+    "refined_test": {
+      "n_examples": 2610,
+      "accuracy": 0.6628352490421456,
+      "weighted_f1": 0.6584726608460996,
+      "macro_f1": 0.511166685087126,
+      "weighted_precision": 0.6646049030169144,
+      "weighted_recall": 0.6628352490421456,
+      "cross_entropy": 0.9882607515181795,
+      "per_class": {
+        "neutral": {
+          "precision": 0.77526395173454,
+          "recall": 0.8184713375796179,
+          "f1-score": 0.796281951975213,
+          "support": 1256.0
+        },
+        "joy": {
+          "precision": 0.6095890410958904,
+          "recall": 0.664179104477612,
+          "f1-score": 0.6357142857142857,
+          "support": 402.0
+        },
+        "surprise": {
+          "precision": 0.5451612903225806,
+          "recall": 0.6014234875444839,
+          "f1-score": 0.571912013536379,
+          "support": 281.0
+        },
+        "anger": {
+          "precision": 0.6506550218340611,
+          "recall": 0.4318840579710145,
+          "f1-score": 0.519163763066202,
+          "support": 345.0
+        },
+        "sadness": {
+          "precision": 0.5,
+          "recall": 0.34134615384615385,
+          "f1-score": 0.4057142857142857,
+          "support": 208.0
+        },
+        "disgust": {
+          "precision": 0.32894736842105265,
+          "recall": 0.36764705882352944,
+          "f1-score": 0.3472222222222222,
+          "support": 68.0
+        },
+        "fear": {
+          "precision": 0.23595505617977527,
+          "recall": 0.42,
+          "f1-score": 0.302158273381295,
+          "support": 50.0
+        },
+        "accuracy": 0.6628352490421456,
+        "macro avg": {
+          "precision": 0.5207959613697,
+          "recall": 0.5207073143203444,
+          "f1-score": 0.511166685087126,
+          "support": 2610.0
+        },
+        "weighted avg": {
+          "precision": 0.6646049030169144,
+          "recall": 0.6628352490421456,
+          "f1-score": 0.6584726608460996,
+          "support": 2610.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          1028,
+          79,
+          45,
+          31,
+          37,
+          10,
+          26
+        ],
+        [
+          79,
+          267,
+          22,
+          14,
+          8,
+          7,
+          5
+        ],
+        [
+          44,
+          34,
+          169,
+          16,
+          6,
+          9,
+          3
+        ],
+        [
+          69,
+          36,
+          48,
+          149,
+          12,
+          17,
+          14
+        ],
+        [
+          69,
+          17,
+          12,
+          12,
+          71,
+          7,
+          20
+        ],
+        [
+          22,
+          3,
+          9,
+          6,
+          3,
+          25,
+          0
+        ],
+        [
+          15,
+          2,
+          5,
+          1,
+          5,
+          1,
+          21
+        ]
+      ]
+    },
+    "weighted_f1_difference": 0.0009159962948789291,
+    "paired_dialogue_bootstrap": {
+      "unit": "dialogue",
+      "paired": true,
+      "resamples": 2000,
+      "seed": 2025,
+      "interval": "95% percentile",
+      "metric": "weighted_f1 difference: refined minus reference",
+      "n_dialogues": 280,
+      "lower": -0.0032260167840637817,
+      "upper": 0.004886198816128937,
+      "note": "Within-benchmark uncertainty only; does not undo prior test inspection"
+    },
+    "test_used_for_selection": false,
+    "original_test_previously_inspected": true,
+    "no_training_required": true
+  }
+}

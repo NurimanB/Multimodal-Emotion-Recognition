@@ -1,0 +1,4 @@
+split,dialogue_id,utterance_id,text,train_text,char_tfidf_cosine
+dev,18,9,What are you gonna do?,So what are you gonna do?,0.971694650476168
+test,85,1,This sounds like a hernia. You have to—you-you—Go to the doctor!,This sounds like a hernia. You have to—you-you go to the doctor!,0.9594358641061469
+test,85,3,"'Kay look, if I have to go to the doctor for anything it's gonna be for this thing sticking out of my stomach!","No way! 'Kay look, if I have to go to the doctor for anything it's gonna be for this thing sticking out of my stomach!",0.9661232346828119

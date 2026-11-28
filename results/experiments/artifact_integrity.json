@@ -1,0 +1,10 @@
+{
+  "run_archives": {
+    "multiseed_v3_evidence.zip": "54e41832fe8f50269264d4aa4a74a81827739779d66488c3517d46510f4f1244",
+    "run_v1_evidence.zip": "12c842c33fa9f9474c513038487b05c01b55dbdd7dfa33d46f0d68e554ddab53"
+  },
+  "refinement_selection_sha256": "57f1e9b3fc009e0ba288d47f7dc5a0117f1648f00fc09db309ddf1aa6ace7643",
+  "metrics_and_predictions_preserved": true,
+  "inference_measurements_preserved": true,
+  "notebook_format_and_syntax": "valid"
+}

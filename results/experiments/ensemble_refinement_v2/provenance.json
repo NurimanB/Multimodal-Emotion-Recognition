@@ -1,0 +1,11 @@
+{
+  "source_evidence": "../evidence/run_v1_evidence.zip",
+  "source_archive_sha256": "12c842c33fa9f9474c513038487b05c01b55dbdd7dfa33d46f0d68e554ddab53",
+  "frozen_selection_sha256": "57f1e9b3fc009e0ba288d47f7dc5a0117f1648f00fc09db309ddf1aa6ace7643",
+  "refinement_module": "src/mer/evaluation/refine.py",
+  "refinement_module_sha256": "aebbd7277d819cd7963e4bc37070f7102a581da748713ad9dcd2001f72816329",
+  "validation": "10 related tests passed; archive IDs/labels/fingerprints match canonical MELD",
+  "test_previously_inspected": true,
+  "original_module_sha256": "7b4f81f1a4bc12a9422ad560b8745d86030e19d6958138427565abbd3338c9f3",
+  "maintenance_note": "Package imports renamed; experiment payloads and frozen selection unchanged."
+}
