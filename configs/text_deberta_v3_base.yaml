@@ -1,0 +1,26 @@
+# T4 16 GB; all model selection is on dev.
+model_name: microsoft/deberta-v3-base
+output_dir: outputs/experiments/deberta_s42
+checkpoint_dir: checkpoints/deberta_s42
+n_context: 3
+n_future: 0
+with_speaker: true
+max_length: 256
+epochs: 6
+lr: 2.0e-5
+batch_size: 4
+grad_accum: 4
+weight_decay: 0.01
+warmup_ratio: 0.1
+class_weights: true
+class_weight_power: 0.5
+focal_gamma: 0.0
+early_stopping_patience: 2
+gradient_checkpointing: true
+seed: 42
+logging_steps: 25
+evaluate_test: false
+save_model: true
+save_probs: true
+save_only_model: true
+resume_from_checkpoint: null

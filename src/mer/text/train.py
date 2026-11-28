@@ -9,7 +9,6 @@ Any key=value after the config path overrides the YAML value.
 from __future__ import annotations
 
 import argparse
-import json
 import math
 import random
 import time
@@ -18,18 +17,22 @@ from pathlib import Path
 import numpy as np
 import torch
 import yaml
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score
+from sklearn.metrics import accuracy_score, f1_score
 from torch.utils.data import Dataset
 from transformers import (
     AutoModelForSequenceClassification,
     AutoTokenizer,
     EarlyStoppingCallback,
     Trainer,
+    TrainerCallback,
     TrainingArguments,
     set_seed,
 )
 
 from mer.data.meld import EMOTIONS, ID2LABEL, LABEL2ID, add_context, download_meld, load_split
+from mer.text.encoding import encode_example
+from mer.evaluation.artifacts import metrics as classification_metrics, runtime_info, save_split, write_json
+from transformers.trainer_utils import get_last_checkpoint
 
 DEFAULTS = {
     "model_name": "FacebookAI/xlm-roberta-large",
@@ -55,6 +58,10 @@ DEFAULTS = {
     "limit_train": None,  # use only N train examples (for smoke tests)
     "limit_eval": None,
     "save_model": False,  # keep the best checkpoint at the end (large: ~2 GB for xlm-r-large)
+    "evaluate_test": True,  # disable during dev selection
+    "save_only_model": True,
+    "resume_from_checkpoint": None,  # "auto" requires full optimizer/RNG checkpoints
+    "logging_steps": 50,
     "save_probs": True,  # dev/test probabilities of the best model, for ensembles (small .npy files)
 }
 
@@ -65,12 +72,7 @@ class MeldTextDataset(Dataset):
         for target, context, label in zip(df["target"], df["context"], df["label"]):
             # Target utterance first, context second; only the context is
             # truncated, from the left, so the nearest turns are kept.
-            enc = tokenizer(
-                target,
-                context if context else None,
-                truncation="only_second" if context else True,
-                max_length=max_length,
-            )
+            enc = encode_example(tokenizer, target, context, max_length)
             enc["labels"] = int(label)
             self.features.append(enc)
 
@@ -85,6 +87,7 @@ class WeightedTrainer(Trainer):
     def __init__(self, *args, class_weights=None, focal_gamma=0.0, **kwargs):
         super().__init__(*args, **kwargs)
         self.class_weights = class_weights
+        self.model_accepts_loss_kwargs = False  # mean loss per microbatch; Trainer handles accumulation
         self.focal_gamma = focal_gamma
 
     def compute_loss(self, model, inputs, return_outputs=False, **kwargs):
@@ -137,13 +140,26 @@ def prepare(df, cfg, tokenizer, limit):
     return df, MeldTextDataset(df, tokenizer, cfg["max_length"])
 
 
+class StateExportCallback(TrainerCallback):
+    """Persist small curve evidence even when large checkpoints are local."""
+    def __init__(self, output_dir):
+        self.output_dir = Path(output_dir)
+
+    def on_log(self, args, state, control, **kwargs):
+        if state.is_world_process_zero:
+            state.save_to_json(str(self.output_dir / "trainer_state.json"))
+
+    def on_save(self, args, state, control, **kwargs):
+        self.on_log(args, state, control)
+
+
 def main():
     cfg = parse_config()
     random.seed(cfg["seed"])
     set_seed(cfg["seed"])
     out = Path(cfg["output_dir"])
     out.mkdir(parents=True, exist_ok=True)
-    (out / "config.json").write_text(json.dumps(cfg, indent=2))
+    write_json(out / "config.json", cfg)
 
     download_meld(cfg["data_dir"])
     tokenizer = AutoTokenizer.from_pretrained(cfg["model_name"])
@@ -151,8 +167,7 @@ def main():
 
     train_df, train_ds = prepare(load_split(cfg["data_dir"], "train"), cfg, tokenizer, cfg["limit_train"])
     dev_df, dev_ds = prepare(load_split(cfg["data_dir"], "dev"), cfg, tokenizer, cfg["limit_eval"])
-    test_df, test_ds = prepare(load_split(cfg["data_dir"], "test"), cfg, tokenizer, cfg["limit_eval"])
-    print(f"train={len(train_ds)} dev={len(dev_ds)} test={len(test_ds)}")
+    print(f"train={len(train_ds)} dev={len(dev_ds)}; test evaluation={cfg['evaluate_test']}")
     print("Example input:", tokenizer.decode(train_ds[0]["input_ids"]))
 
     class_weights = None
@@ -184,15 +199,16 @@ def main():
         lr_scheduler_type="linear",
         eval_strategy="epoch",
         save_strategy="epoch",
-        save_total_limit=1,
-        save_only_model=True,
+        save_total_limit=1 if cfg["save_only_model"] else 2,
+        save_only_model=cfg["save_only_model"],
         load_best_model_at_end=True,
         metric_for_best_model="weighted_f1",
         greater_is_better=True,
-        logging_steps=50,
+        logging_steps=cfg["logging_steps"],
         bf16=bf16,
         fp16=use_cuda and not bf16,
         gradient_checkpointing=cfg["gradient_checkpointing"],
+        gradient_checkpointing_kwargs={"use_reentrant": False} if cfg["gradient_checkpointing"] else None,
         report_to="none",
         seed=cfg["seed"],
     )
@@ -203,42 +219,55 @@ def main():
         eval_dataset=dev_ds,
         processing_class=tokenizer,
         compute_metrics=compute_metrics,
-        callbacks=[EarlyStoppingCallback(early_stopping_patience=cfg["early_stopping_patience"])],
+        callbacks=[EarlyStoppingCallback(early_stopping_patience=cfg["early_stopping_patience"]),
+                   StateExportCallback(out)],
         class_weights=class_weights,
         focal_gamma=cfg["focal_gamma"],
     )
 
+    (out / "training_args.json").write_text(args.to_json_string(), encoding="utf-8")
+    resume = cfg["resume_from_checkpoint"]
+    if resume == "auto":
+        resume = get_last_checkpoint(cfg["checkpoint_dir"]) if Path(cfg["checkpoint_dir"]).is_dir() else None
+    if resume and cfg["save_only_model"]:
+        raise ValueError("Optimizer/RNG resume requires save_only_model=false")
+    if use_cuda:
+        torch.cuda.reset_peak_memory_stats()
     start = time.time()
-    trainer.train()
+    trainer.train(resume_from_checkpoint=resume)
     minutes = (time.time() - start) / 60
 
-    results = {"train_minutes": round(minutes, 1)}
-    for split, ds in [("dev", dev_ds), ("test", test_ds)]:
-        pred = trainer.predict(ds)
-        y_pred = pred.predictions.argmax(-1)
-        y_true = pred.label_ids
-        if cfg["save_probs"]:
-            np.save(out / f"{split}_probs.npy", torch.softmax(torch.tensor(pred.predictions).float(), -1).numpy())
-            np.save(out / f"{split}_labels.npy", y_true)
-        results[split] = {k.replace("test_", ""): v for k, v in pred.metrics.items()}
-        results[split]["per_class"] = classification_report(
-            y_true, y_pred, labels=list(range(len(EMOTIONS))), target_names=EMOTIONS,
-            output_dict=True, zero_division=0,
-        )
-        results[split]["confusion_matrix"] = confusion_matrix(
-            y_true, y_pred, labels=list(range(len(EMOTIONS)))
-        ).tolist()
-        print(f"\n== {split} ==")
-        print(classification_report(
-            y_true, y_pred, labels=list(range(len(EMOTIONS))), target_names=EMOTIONS,
-            digits=4, zero_division=0,
-        ))
-
-    (out / "results.json").write_text(json.dumps(results, indent=2, default=float))
+    trainer.state.save_to_json(str(out / "trainer_state.json"))
+    results = {"train_minutes": round(minutes, 2), "model_name": cfg["model_name"],
+               "best_validation_metric": trainer.state.best_metric,
+               "checkpoint_selection": "highest dev weighted F1; early stopping on dev"}
+    evaluation = [("dev", dev_df, dev_ds)]
+    if cfg["evaluate_test"]:
+        test_df, test_ds = prepare(load_split(cfg["data_dir"], "test"), cfg, tokenizer, cfg["limit_eval"])
+        evaluation.append(("test", test_df, test_ds))
+    for split, frame, dataset in evaluation:
+        pred = trainer.predict(dataset)
+        probs = torch.softmax(torch.tensor(pred.predictions).float(), -1).numpy()
+        score = save_split(out, split, frame, probs) if cfg["save_probs"] else classification_metrics(pred.label_ids, probs)
+        score.update({k.replace("test_", ""): v for k, v in pred.metrics.items()})
+        results[split] = score
+        print(f"{split} weighted F1: {score['weighted_f1']:.4f}")
+    results["hardware"] = runtime_info(trainer.model)
+    results["hardware"].update(training_batch_size=cfg["batch_size"],
+                               gradient_accumulation_steps=cfg["grad_accum"], max_length=cfg["max_length"])
+    write_json(out / "results.json", results)
     if cfg["save_model"]:
         trainer.save_model(str(out / "best_model"))
+        tokenizer.save_pretrained(str(out / "best_model"))
+    write_json(out / "checkpoint_manifest.json", {
+        "model_name": cfg["model_name"], "best_validation_metric": trainer.state.best_metric,
+        "best_training_checkpoint": trainer.state.best_model_checkpoint,
+        "exported_checkpoint": str(out / "best_model") if cfg["save_model"] else None,
+        "label_order": EMOTIONS, "seed": cfg["seed"],
+    })
     print(f"\nDev weighted F1:  {results['dev']['weighted_f1']:.4f}")
-    print(f"Test weighted F1: {results['test']['weighted_f1']:.4f}")
+    if "test" in results:
+        print(f"Test weighted F1: {results['test']['weighted_f1']:.4f}")
     print(f"Results saved to {out / 'results.json'}")
 
 

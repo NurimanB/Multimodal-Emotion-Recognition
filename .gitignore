@@ -12,3 +12,8 @@ wandb/
 *.pt
 *.bin
 *.safetensors
+
+# Local environments and experiment exports
+.venv*/
+.pytest_cache/
+/dist/

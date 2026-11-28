@@ -1,0 +1,18 @@
+# Pipeline check only; these scores are not reportable results.
+model_name: microsoft/deberta-v3-base
+output_dir: outputs/experiments/smoke_deberta
+checkpoint_dir: checkpoints/experiment_smoke_deberta
+n_context: 3
+n_future: 0
+max_length: 128
+epochs: 1
+lr: 2.0e-5
+batch_size: 2
+grad_accum: 2
+limit_train: 128
+limit_eval: 64
+gradient_checkpointing: true
+evaluate_test: false
+save_model: false
+save_probs: true
+logging_steps: 5
